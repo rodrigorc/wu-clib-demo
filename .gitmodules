@@ -1,0 +1,3 @@
+[submodule "wu-clib-rs"]
+	path = wu-clib-rs
+	url = ../wu-clib-rs

@@ -1,0 +1,14 @@
+[package]
+name = "wu-clib-demo"
+version = "0.1.0"
+edition = "2021"
+
+[lib]
+crate-type = ["cdylib"]
+
+[dependencies]
+log = "*"
+wu-clib = { path = "wu-clib-rs" }
+wasm-bindgen = "*"
+web-sys = "*"
+easy-imgui-renderer = { path = "../easy-imgui-rs/easy-imgui-renderer" }
