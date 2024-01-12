@@ -1,0 +1,67 @@
+use std::error::Error;
+use xshell::{Shell};
+
+
+type Result<T> = std::result::Result<T, Box<dyn Error>>;
+
+fn main() -> Result<()> {
+    let mut args = std::env::args();
+    args.next(); //skip argv[0]
+    let task = args.next();
+    return match task.as_deref() {
+        None => {
+            help()
+        }
+        Some("pack") => do_pack(&args.collect::<Vec<_>>()),
+        Some("deploy") => do_deploy(),
+        Some(task) => {
+            help()?;
+            Err(format!("Unknown xtask '{}'", task).into())
+        }
+    };
+}
+
+fn help() -> Result<()> {
+    println!("USAGE: ");
+    println!("    xtask [TASK]");
+    println!();
+    println!("Available TASKs:");
+    println!("    pack      💼 Compile and wasm-pack. Can Add --debug or --release (default).");
+    println!("    deploy    🚀 Update the DEMO worktree");
+    println!();
+    Ok(())
+}
+
+fn do_pack(args: &[String]) -> Result<()> {
+    let sh = Shell::new()?;
+    let mut mode = "--release";
+    for arg in args {
+        match arg.as_str() {
+            "--debug" => mode = "--debug",
+            "--release" => mode = "--release",
+            arg => return Err(format!("unknown argument '{}'", arg).into())
+        }
+    }
+    sh.cmd("wu-clib-rs/wasm-pack")
+        .arg("build")
+        .arg("--no-typescript")
+        .arg("--target=web")
+        .arg(mode)
+        .run()?;
+    Ok(())
+}
+
+fn do_deploy() -> Result<()> {
+    let sh = Shell::new()?;
+    let dst = sh.current_dir().join("DEMO");
+    sh.create_dir(&dst)?;
+    let pkg = dst.join("pkg");
+    sh.create_dir(&pkg)?;
+
+    sh.copy_file("index.html", &dst)?;
+    sh.copy_file("main.js", &dst)?;
+    sh.copy_file("pkg/wu_clib_demo.js", &pkg)?;
+    sh.copy_file("pkg/wu_clib_demo_bg.wasm", &pkg)?;
+    println!("Deployed to {:?}! 👍", dst.to_string_lossy());
+    Ok(())
+}

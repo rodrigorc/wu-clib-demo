@@ -110,6 +110,7 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "1a98d30140e3296250832bbaaff83b27dcd6fa3cc70fb6f1f3e5c9c0023b5317"
 dependencies = [
  "approx",
+ "mint",
  "num-traits",
 ]
 
@@ -165,6 +166,7 @@ name = "easy-imgui"
 version = "0.1.0"
 dependencies = [
  "bitflags",
+ "cgmath",
  "cstr",
  "easy-imgui-sys",
  "image",
@@ -191,7 +193,6 @@ version = "0.1.0"
 dependencies = [
  "bindgen",
  "cc",
- "mint",
  "pkg-config",
  "xshell",
 ]
@@ -849,6 +850,7 @@ dependencies = [
 name = "wu-clib-demo"
 version = "0.1.0"
 dependencies = [
+ "easy-imgui",
  "easy-imgui-renderer",
  "log",
  "wasm-bindgen",
@@ -870,3 +872,10 @@ name = "xshell-macros"
 version = "0.2.5"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "7e2c411759b501fb9501aac2b1b2d287a6e93e5bdcf13c25306b23e1b716dd0e"
+
+[[package]]
+name = "xtask"
+version = "0.0.0"
+dependencies = [
+ "xshell",
+]
