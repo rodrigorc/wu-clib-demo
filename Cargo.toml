@@ -14,6 +14,6 @@ log = "*"
 wu-clib = { path = "wu-clib-rs" }
 wasm-bindgen = "*"
 web-sys = "*"
-easy-imgui-renderer = { path = "../easy-imgui-rs/easy-imgui-renderer" }
-easy-imgui = { path = "../easy-imgui-rs/easy-imgui", features = ["docking"] }
+easy-imgui-renderer = "0.15"
+easy-imgui = { version = "0.15" }
 

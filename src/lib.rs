@@ -10,6 +10,7 @@ use web_sys::*;
 use easy_imgui_renderer::*;
 use easy_imgui as imgui;
 use easy_imgui_sys::*;
+use easy_imgui_opengl::{self as glr};
 
 pub struct Data {
     render: Renderer,
@@ -106,7 +107,7 @@ pub unsafe fn do_key(_data: *mut Data, key: &str, press: bool) {
         //TODO: add all the other keys
         _ => return,
     };
-    ImGuiIO_AddKeyEvent(io, ImGuiKey(key.bits()), press);
+    io.AddKeyEvent(key.bits(), press);
 }
 
 struct App {
@@ -115,7 +116,7 @@ struct App {
 
 impl imgui::UiBuilder for App {
     fn do_ui(&mut self, ui: &imgui::Ui<Self>) {
-        ui.dock_space_over_viewport(imgui::DockNodeFlags::None);
+        //ui.dock_space_over_viewport(imgui::DockNodeFlags::None);
         ui.show_demo_window(None);
     }
 }
