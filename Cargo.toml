@@ -7,13 +7,13 @@ edition = "2021"
 crate-type = ["cdylib"]
 
 [workspace]
-members = ["xtask"]
+members = ["xtask", "jpeg"]
 
 [dependencies]
 log = "*"
 wu-clib = { path = "wu-clib-rs" }
 wasm-bindgen = "*"
 web-sys = "*"
-easy-imgui-renderer = "0.15"
-easy-imgui = { version = "0.15" }
-
+easy-imgui-renderer = "0.16"
+easy-imgui = "0.16"
+jpeg = { path = "jpeg" }

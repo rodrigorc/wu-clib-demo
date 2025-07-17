@@ -52,6 +52,45 @@ pub unsafe fn init_demo() -> *mut Data {
         app,
         last_time: 0.0,
     });
+
+    // Read a JPEG and write it to the log, just for show.
+    unsafe {
+        static JPEG_DATA: &[u8] = include_bytes!("rose.jpg");
+        use jpeg::bindings::*;
+        use std::mem::MaybeUninit;
+
+        let mut cinfo: jpeg_decompress_struct = MaybeUninit::zeroed().assume_init();
+        let mut jerr: jpeg_error_mgr = MaybeUninit::zeroed().assume_init();
+        cinfo.err = jpeg_std_error(&mut jerr);
+        jpeg_CreateDecompress(&mut cinfo, JPEG_LIB_VERSION as i32, std::mem::size_of::<jpeg_decompress_struct>());
+        jpeg_mem_src(&mut cinfo, JPEG_DATA.as_ptr(), JPEG_DATA.len());
+        jpeg_read_header(&mut cinfo, 1);
+        jpeg_start_decompress(&mut cinfo);
+        log::info!("{cinfo:?}");
+        let mut line = vec![0; cinfo.output_width as usize * cinfo.output_components as usize];
+        let mut lines = vec![line.as_mut_ptr(); 1];
+        while cinfo.output_scanline < cinfo.output_height {
+            let _num_scanlines = jpeg_read_scanlines(&mut cinfo, lines.as_mut_ptr(), 1);
+            let mut s = String::new();
+            for px in line.chunks_exact(cinfo.output_components as usize) {
+                let c = px.iter().map(|x| u32::from(*x)).sum::<u32>() / px.len() as u32;
+                let c = if c < 64 {
+                    ' '
+                } else if c < 128 {
+                    '+'
+                } else if c < 192 {
+                    'o'
+                } else {
+                    'O'
+                };
+                s.push(c);
+                s.push(c);
+            }
+            log::info!("{s}");
+        }
+        jpeg_finish_decompress(&mut cinfo);
+        jpeg_destroy_decompress(&mut cinfo);
+    }
     Box::into_raw(data)
 }
 

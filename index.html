@@ -7,6 +7,16 @@
         <!-- not-so-hidden input hack to get the input text as proper text -->
         <div style="width:0;height:0;overflow:hidden;"><input type="text"/></div>
         <canvas id="canvas" width="1000" height="700" style="display: block; margin: 0; padding: 0;"></canvas>
+
+        <!-- this should not be needed, but if some C symbol is undefined, it can be defined in env.js -->
+	<script type="importmap">
+	{
+	  "imports": {
+	    "env": "./env.js"
+	  }
+	}
+	</script>
+
         <script type="module" src="main.js"></script>
     </body>
 </html>
