@@ -8,7 +8,7 @@ use wasm_bindgen::{
 use web_sys::*;
 
 use easy_imgui_renderer::*;
-use easy_imgui as imgui;
+use easy_imgui::{self as imgui, image::GenericImage, lbl_id, CustomRectIndex};
 use easy_imgui_sys::*;
 use easy_imgui_opengl::{self as glr};
 
@@ -42,55 +42,56 @@ pub unsafe fn init_demo() -> *mut Data {
         .unwrap();
     let gl = glow::Context::from_webgl2_context(webgl2_context);
     let gl = Rc::new(gl);
-    let render = Renderer::new(gl.clone()).unwrap();
-    let app = App {
-        _gl: gl.clone(),
-    };
+    let mut render = Renderer::new(gl.clone()).unwrap();
 
-    let data = Box::new(Data {
-        render,
-        app,
-        last_time: 0.0,
-    });
+    let rose_rect;
 
     // Read a JPEG and write it to the log, just for show.
     unsafe {
         static JPEG_DATA: &[u8] = include_bytes!("rose.jpg");
         use jpeg::bindings::*;
         use std::mem::MaybeUninit;
+        use imgui::image::Rgba;
 
         let mut cinfo: jpeg_decompress_struct = MaybeUninit::zeroed().assume_init();
         let mut jerr: jpeg_error_mgr = MaybeUninit::zeroed().assume_init();
         cinfo.err = jpeg_std_error(&mut jerr);
+        //jpeg_create_decompress is a macro
         jpeg_CreateDecompress(&mut cinfo, JPEG_LIB_VERSION as i32, std::mem::size_of::<jpeg_decompress_struct>());
         jpeg_mem_src(&mut cinfo, JPEG_DATA.as_ptr(), JPEG_DATA.len());
         jpeg_read_header(&mut cinfo, 1);
         jpeg_start_decompress(&mut cinfo);
-        log::info!("{cinfo:?}");
-        let mut line = vec![0; cinfo.output_width as usize * cinfo.output_components as usize];
-        let mut lines = vec![line.as_mut_ptr(); 1];
-        while cinfo.output_scanline < cinfo.output_height {
-            let _num_scanlines = jpeg_read_scanlines(&mut cinfo, lines.as_mut_ptr(), 1);
-            let mut s = String::new();
-            for px in line.chunks_exact(cinfo.output_components as usize) {
-                let c = px.iter().map(|x| u32::from(*x)).sum::<u32>() / px.len() as u32;
-                let c = if c < 64 {
-                    ' '
-                } else if c < 128 {
-                    '+'
-                } else if c < 192 {
-                    'o'
-                } else {
-                    'O'
-                };
-                s.push(c);
-                s.push(c);
+
+        let size = [cinfo.image_width, cinfo.image_height];
+        rose_rect = render.imgui().io_mut().font_atlas_mut().add_custom_rect(size,
+            |img| {
+                log::info!("{cinfo:?}");
+                let mut line = vec![0; cinfo.output_width as usize * cinfo.output_components as usize];
+                let mut lines = vec![line.as_mut_ptr(); 1];
+                while cinfo.output_scanline < cinfo.output_height {
+                    let y = cinfo.output_scanline;
+                    let _num_scanlines = jpeg_read_scanlines(&mut cinfo, lines.as_mut_ptr(), 1);
+                    for x in 0 .. cinfo.image_width {
+                        let p = &line[3 * x as usize ..][..3];
+                        img.put_pixel(x, y, Rgba([p[0], p[1], p[2], 0xff]));
+                    }
+                }
             }
-            log::info!("{s}");
-        }
+        );
+        log::info!("Rect: {rose_rect:?}");
         jpeg_finish_decompress(&mut cinfo);
         jpeg_destroy_decompress(&mut cinfo);
     }
+
+    let app = App {
+        _gl: gl.clone(),
+        rose_rect,
+    };
+    let data = Box::new(Data {
+        render,
+        app,
+        last_time: 0.0,
+    });
     Box::into_raw(data)
 }
 
@@ -106,6 +107,7 @@ pub unsafe fn do_frame(data: *mut Data, time: f32, w: i32, h: i32) {
     data.last_time = time;
     data.render.do_frame(&mut data.app);
 }
+
 #[wasm_bindgen]
 pub unsafe fn do_mouse_move(_data: *mut Data, x: i32, y: i32) {
     let io = &mut *ImGui_GetIO();
@@ -151,12 +153,27 @@ pub unsafe fn do_key(_data: *mut Data, key: &str, press: bool) {
 
 struct App {
     _gl: glr::GlContext,
+    rose_rect: CustomRectIndex,
 }
 
 impl imgui::UiBuilder for App {
     fn do_ui(&mut self, ui: &imgui::Ui<Self>) {
         //ui.dock_space_over_viewport(imgui::DockNodeFlags::None);
         ui.show_demo_window(None);
+
+        ui.window_config(lbl_id("wu-clib-demo", "main"))
+            .with(|| {
+                ui.text("This is a demo for `wu-clib-rs`, a contraption to build");
+                ui.text("wasm32 application with C/C++ library dependencies.");
+                ui.set_cursor_pos_y(ui.get_cursor_pos_y() + 16.0);
+                ui.text("The UI is built with `Dear ImGui`, a C++ library,");
+                ui.text("using the `easy-imgui` bindings, and `glow` for the rendering.");
+                ui.set_cursor_pos_y(ui.get_cursor_pos_y() + 16.0);
+                ui.text("This image is decoded using IJG's libjpeg, a C library.");
+
+                ui.image_with_custom_rect_config(self.rose_rect, 4.0)
+                    .build();
+            });
     }
 }
 

@@ -6,19 +6,32 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
+    container:
+      image: rust
     steps:
       - name: Prepare
         run: |
-          sudo apt install -y libclang-rt-18-dev-wasm32
-          cargo install wasm-pack
+          #apk update
+          #apk add rustup
+          #apk add bash git tar
+          #apk add clang20 clang20-libclang wasi-compiler-rt
+          #rustup-init -y -t wasm32-unknown-unknown --default-toolchain beta
+          # apk add rust cargo wasm-pack
+          #apk add wasm-pack
+          #source ~/.cargo/env
+          apt update
+          apt install -y clang libclang-rt-dev-wasm32
+          cargo +beta install wasm-pack
+          clang --version
+          cargo +beta --version
       - name: Checkout
         uses: actions/checkout@v4
         with:
           submodules: recursive
       - name: Build
-        run: cargo xtask pack
+        run: cargo +beta xtask pack
       - name: Deploy
-        run: cargo xtask deploy
+        run: cargo +beta xtask deploy
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
         with:
