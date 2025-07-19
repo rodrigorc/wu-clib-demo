@@ -1,3 +1,6 @@
 [submodule "wu-clib-rs"]
 	path = wu-clib-rs
 	url = https://github.com/rodrigorc/wu-clib-rs.git
+[submodule "easy-imgui-rs"]
+	path = easy-imgui-rs
+	url = https://github.com/rodrigorc/easy-imgui-rs

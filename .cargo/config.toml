@@ -1,2 +1,9 @@
 [alias]
 xtask = "run --package xtask --"
+
+[patch.crates-io]
+easy-imgui = { path = "easy-imgui-rs/easy-imgui" }
+easy-imgui-sys = { path = "easy-imgui-rs/easy-imgui-sys" }
+easy-imgui-renderer = { path = "easy-imgui-rs/easy-imgui-renderer" }
+easy-imgui-opengl = { path = "easy-imgui-rs/easy-imgui-opengl" }
+
