@@ -139,7 +139,7 @@ pub unsafe fn do_text(_data: *mut Data, text: &str) {
 #[wasm_bindgen]
 pub unsafe fn do_key(
     _data: *mut Data,
-    key_string: &str,
+    _key_string: &str,
     code_string: &str,
     press: bool,
     ctrl: bool,
@@ -266,7 +266,7 @@ pub unsafe fn do_key(
         "NumpadEnter" => imgui::Key::KeypadEnter,
         "NumpadEqual" => imgui::Key::KeypadEqual,
 
-        "CtrlLeft" | "CtrlRight" | "ShiftLeft" | "ShiftRight" | "AltLeft" | "AltRight" => return, // we already handled it
+        "ControlLeft" | "ControlRight" | "ShiftLeft" | "ShiftRight" | "AltLeft" | "AltRight" => return, // we already handled it
         code => {
             log::warn!("Key code `{code}` is not supported yet!");
             // web_sys::console::warn_1(&format!("Key code `{code}` is not supported yet!").into());
