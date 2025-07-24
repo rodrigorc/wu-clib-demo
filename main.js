@@ -64,10 +64,30 @@ async function onDocumentLoad() {
         this.value = "";
     }
     function onKeyDown(e) {
-        w.do_key(demo, e.key, true);
+        w.do_key(
+            demo,
+            e.key,
+            e.code,
+            true,
+            e.ctrlKey,
+            e.shiftKey,
+            e.altKey,
+            e.metaKey,
+            e.repeat
+        );
     }
     function onKeyUp(e) {
-        w.do_key(demo, e.key, false);
+        w.do_key(
+            demo,
+            e.key,
+            e.code,
+            false,
+            e.ctrlKey,
+            e.shiftKey,
+            e.altKey,
+            e.metaKey,
+            e.repeat
+        );
     }
 
     canvas.addEventListener('contextmenu', (e) => { e.preventDefault(); return false; }, false);
@@ -99,4 +119,3 @@ async function onDocumentLoad() {
 }
 
 addEventListener("DOMContentLoaded", onDocumentLoad);
-
