@@ -171,7 +171,6 @@ pub unsafe fn do_key(
         "ContextMenu" => imgui::Key::Menu,
 
         // Editing & Control Keys
-        // TODO: "Print" => imgui::Key::PrintScreen,
         "Backspace" => imgui::Key::Backspace,
         "Enter" => imgui::Key::Enter,
         "Tab" => imgui::Key::Tab,
@@ -181,6 +180,7 @@ pub unsafe fn do_key(
         "CapsLock" => imgui::Key::CapsLock,
         "NumLock" => imgui::Key::NumLock,
         "ScrollLock" => imgui::Key::ScrollLock,
+        "PrintScreen" => imgui::Key::PrintScreen,
         "Pause" => imgui::Key::Pause,
 
         // Function keys
