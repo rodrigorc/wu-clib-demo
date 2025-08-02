@@ -8,7 +8,7 @@ use wasm_bindgen::{
 use web_sys::*;
 
 use easy_imgui_renderer::*;
-use easy_imgui::{self as imgui, image::GenericImage, lbl_id, CustomRectIndex};
+use easy_imgui::{self as imgui, image::GenericImage, lbl_id, vec2, CustomRectIndex};
 use easy_imgui_sys::*;
 use easy_imgui_opengl::{self as glr};
 
@@ -161,14 +161,15 @@ impl imgui::UiBuilder for App {
         //ui.dock_space_over_viewport(imgui::DockNodeFlags::None);
         ui.show_demo_window(None);
 
+        let line_y = vec2(0.0, ui.get_text_line_height());
         ui.window_config(lbl_id("wu-clib-demo", "main"))
             .with(|| {
                 ui.text("This is a demo for `wu-clib-rs`, a contraption to build");
-                ui.text("wasm32 application with C/C++ library dependencies.");
-                ui.set_cursor_pos_y(ui.get_cursor_pos_y() + 16.0);
+                ui.text("wasm32-unknown-unknown application with C/C++ library dependencies.");
+                ui.set_cursor_screen_pos(ui.get_cursor_screen_pos() + line_y);
                 ui.text("The UI is built with `Dear ImGui`, a C++ library,");
                 ui.text("using the `easy-imgui` bindings, and `glow` for the rendering.");
-                ui.set_cursor_pos_y(ui.get_cursor_pos_y() + 16.0);
+                ui.set_cursor_screen_pos(ui.get_cursor_screen_pos() + line_y);
                 ui.text("This image is decoded using IJG's libjpeg, a C library.");
 
                 ui.image_with_custom_rect_config(self.rose_rect, 4.0)
