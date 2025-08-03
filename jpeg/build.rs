@@ -17,7 +17,9 @@ fn main() {
         "jmemnobs.c",
     ];
     for src in sources {
-        build.file(format!("jpeg-9f/{src}"));
+        let name = format!("jpeg-9f/{src}");
+        println!("cargo:rerun-if-changed={name}");
+        build.file(&name);
     }
     build.compile("jpeg");
 
