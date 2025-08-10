@@ -135,20 +135,147 @@ pub unsafe fn do_text(_data: *mut Data, text: &str) {
         ImGuiIO_AddInputCharacter(io, c as u32);
     }
 }
+
 #[wasm_bindgen]
-pub unsafe fn do_key(_data: *mut Data, key: &str, press: bool) {
+pub unsafe fn do_key(
+    _data: *mut Data,
+    _key_string: &str,
+    code_string: &str,
+    press: bool,
+    ctrl: bool,
+    shift: bool,
+    alt: bool,
+    meta: bool,
+    _repeat: bool,
+) {
     let io = &mut *ImGui_GetIO();
-    let key = match key {
+
+    // Modifer Keys
+    ImGuiIO_AddKeyEvent(io, imgui::Key::ModCtrl.bits(), ctrl);
+    ImGuiIO_AddKeyEvent(io, imgui::Key::ModShift.bits(), shift);
+    ImGuiIO_AddKeyEvent(io, imgui::Key::ModAlt.bits(), alt);
+    ImGuiIO_AddKeyEvent(io, imgui::Key::ModSuper.bits(), meta);
+
+    // Alphanumerics with `key_string`, can be different in non-english languages.
+    // With `code_string`, we can catch them all.
+    let key = match code_string {
+        // Navigation Keys
         "ArrowLeft" => imgui::Key::LeftArrow,
         "ArrowRight" => imgui::Key::RightArrow,
-        "ArrowDown" => imgui::Key::DownArrow,
         "ArrowUp" => imgui::Key::UpArrow,
-        "Enter" => imgui::Key::Enter,
+        "ArrowDown" => imgui::Key::DownArrow,
+        "Home" => imgui::Key::Home,
+        "End" => imgui::Key::End,
+        "PageUp" => imgui::Key::PageUp,
+        "PageDown" => imgui::Key::PageDown,
+        "ContextMenu" => imgui::Key::Menu,
+
+        // Editing & Control Keys
         "Backspace" => imgui::Key::Backspace,
-        //TODO: add all the other keys
-        _ => return,
+        "Enter" => imgui::Key::Enter,
+        "Tab" => imgui::Key::Tab,
+        "Escape" => imgui::Key::Escape,
+        "Insert" => imgui::Key::Insert,
+        "Delete" => imgui::Key::Delete,
+        "CapsLock" => imgui::Key::CapsLock,
+        "NumLock" => imgui::Key::NumLock,
+        "ScrollLock" => imgui::Key::ScrollLock,
+        "PrintScreen" => imgui::Key::PrintScreen,
+        "Pause" => imgui::Key::Pause,
+
+        // Function keys
+        // TODO: Fn (function key)
+        "F1" => imgui::Key::F1,
+        "F2" => imgui::Key::F2,
+        "F3" => imgui::Key::F3,
+        "F4" => imgui::Key::F4,
+        "F5" => imgui::Key::F5,
+        "F6" => imgui::Key::F6,
+        "F7" => imgui::Key::F7,
+        "F8" => imgui::Key::F8,
+        "F9" => imgui::Key::F9,
+        "F10" => imgui::Key::F10,
+        "F11" => imgui::Key::F11,
+        "F12" => imgui::Key::F12,
+
+        // Alphanumeric and Panctuations Keys
+        "Space" => imgui::Key::Space,
+        "Digit0" => imgui::Key::Num0,
+        "Digit1" => imgui::Key::Num1,
+        "Digit2" => imgui::Key::Num2,
+        "Digit3" => imgui::Key::Num3,
+        "Digit4" => imgui::Key::Num4,
+        "Digit5" => imgui::Key::Num5,
+        "Digit6" => imgui::Key::Num6,
+        "Digit7" => imgui::Key::Num7,
+        "Digit8" => imgui::Key::Num8,
+        "Digit9" => imgui::Key::Num9,
+        "Quote" => imgui::Key::Apostrophe,
+        "Comma" => imgui::Key::Comma,
+        "Minus" => imgui::Key::Minus,
+        "Period" => imgui::Key::Period,
+        "Slash" => imgui::Key::Slash,
+        "Semicolon" => imgui::Key::Semicolon,
+        "Equal" => imgui::Key::Equal,
+        "BracketLeft" => imgui::Key::LeftBracket,
+        "BracketRight" => imgui::Key::RightBracket,
+        "Backslash" => imgui::Key::Backslash,
+        "Backquote" => imgui::Key::GraveAccent,
+        "IntlBackslash" => imgui::Key::Oem102,
+        "KeyA" => imgui::Key::A,
+        "KeyB" => imgui::Key::B,
+        "KeyC" => imgui::Key::C,
+        "KeyD" => imgui::Key::D,
+        "KeyE" => imgui::Key::E,
+        "KeyF" => imgui::Key::F,
+        "KeyG" => imgui::Key::G,
+        "KeyH" => imgui::Key::H,
+        "KeyI" => imgui::Key::I,
+        "KeyJ" => imgui::Key::J,
+        "KeyK" => imgui::Key::K,
+        "KeyL" => imgui::Key::L,
+        "KeyM" => imgui::Key::M,
+        "KeyN" => imgui::Key::N,
+        "KeyO" => imgui::Key::O,
+        "KeyP" => imgui::Key::P,
+        "KeyQ" => imgui::Key::Q,
+        "KeyR" => imgui::Key::R,
+        "KeyS" => imgui::Key::S,
+        "KeyT" => imgui::Key::T,
+        "KeyU" => imgui::Key::U,
+        "KeyV" => imgui::Key::V,
+        "KeyW" => imgui::Key::W,
+        "KeyX" => imgui::Key::X,
+        "KeyY" => imgui::Key::Y,
+        "KeyZ" => imgui::Key::Z,
+        "Numpad0" => imgui::Key::Keypad0,
+        "Numpad1" => imgui::Key::Keypad1,
+        "Numpad2" => imgui::Key::Keypad2,
+        "Numpad3" => imgui::Key::Keypad3,
+        "Numpad4" => imgui::Key::Keypad4,
+        "Numpad5" => imgui::Key::Keypad5,
+        "Numpad6" => imgui::Key::Keypad6,
+        "Numpad7" => imgui::Key::Keypad7,
+        "Numpad8" => imgui::Key::Keypad8,
+        "Numpad9" => imgui::Key::Keypad9,
+        "NumpadDecimal" => imgui::Key::KeypadDecimal,
+        "NumpadDivide" => imgui::Key::KeypadDivide,
+        "NumpadMultiply" => imgui::Key::KeypadMultiply,
+        "NumpadSubtract" => imgui::Key::KeypadSubtract,
+        "NumpadAdd" => imgui::Key::KeypadAdd,
+        "NumpadEnter" => imgui::Key::KeypadEnter,
+        "NumpadEqual" => imgui::Key::KeypadEqual,
+
+        "ControlLeft" | "ControlRight" | "ShiftLeft" | "ShiftRight" | "AltLeft" | "AltRight" => return, // we already handled it
+        code => {
+            log::warn!("Key code `{code}` is not supported yet!");
+            // web_sys::console::warn_1(&format!("Key code `{code}` is not supported yet!").into());
+            // TODO: Add a link to create a github issue for key code support
+            return
+        },
     };
-    io.AddKeyEvent(key.bits(), press);
+
+    ImGuiIO_AddKeyEvent(io, key.bits(), press);
 }
 
 struct App {
